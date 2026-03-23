@@ -149,7 +149,7 @@ module cheshire_soc import cheshire_pkg::*; #(
 
   // Interrupt requests to all interruptible harts
   cheshire_xeip_t [NumIrqHarts-1:0] xeip;
-  logic           [NumIrqHarts-1:0] mtip, msip;
+  logic [1:0]     [NumIrqHarts-1:0] mtip, msip;
 
   // Interrupt 0 is hardwired to zero by convention.
   // Other internal interrupts are synchronous (for now) and need not be synced;
@@ -619,8 +619,8 @@ module cheshire_soc import cheshire_pkg::*; #(
       .boot_addr_i      ( BootAddr ),
       .hart_id_i        ( 64'(i) ),
       .irq_i            ( xeip[i] ),
-      .ipi_i            ( msip[i] ),
-      .time_irq_i       ( mtip[i] ),
+      .ipi_i            ( msip[i][0] ),
+      .time_irq_i       ( mtip[i][0] ),
       .debug_req_i      ( dbg_int_req[i] ),
       .clic_irq_valid_i ( clic_irq_valid ),
       .clic_irq_id_i    ( clic_irq_id    ),
@@ -675,8 +675,8 @@ module cheshire_soc import cheshire_pkg::*; #(
         core: '{
           meip: xeip[i].m,
           seip: xeip[i].s,
-          mtip: mtip[i],
-          msip: msip[i],
+          mtip: mtip[i][0],
+          msip: msip[i][0],
           default: '0
         }
       };
@@ -1084,7 +1084,7 @@ module cheshire_soc import cheshire_pkg::*; #(
     .reg_req_i  ( reg_out_req[RegOut.plic] ),
     .reg_rsp_o  ( reg_out_rsp[RegOut.plic] ),
     .intr_src_i ( intr_routed[IntrRtdPlic][rv_plic_reg_pkg::NumSrc-1:0] ),
-    .irq_o      ( xeip ),
+    .irq_o      ( xeip[0].m ),
     .irq_id_o   ( ),
     .msip_o     ( )
   );
